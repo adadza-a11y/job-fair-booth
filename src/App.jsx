@@ -172,7 +172,13 @@ export default function App() {
       const snap = await getDoc(ref);
       if (!snap.exists()) { setErr("Invalid access code. Please check with the organizer."); return; }
       const data = snap.data();
-      if (data.used) { setErr("This code has already been used to reserve a booth."); return; }
+      if (data.used) {
+        // Code already used — let them in as view-only, highlight their booth
+        setValidCode(code);
+        setSelectedBooth(data.boothId);
+        setPhase("viewmap");
+        return;
+      }
       setValidCode(code);
       setPhase("map");
     } catch {
@@ -308,7 +314,7 @@ export default function App() {
               style={{ ...S.input, textTransform: "uppercase", letterSpacing: 3, fontSize: 18, textAlign: "center", fontWeight: 700 }}
               value={codeInput}
               onChange={(e) => setCodeInput(e.target.value.toUpperCase())}
-              placeholder="e.g. AB3X7K2M"
+              placeholder="e.g. CUEX7K"
               maxLength={20}
               autoFocus
             />
