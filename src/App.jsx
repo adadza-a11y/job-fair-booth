@@ -447,6 +447,16 @@ export default function App() {
         />
       )}
 
+      {/* ── Persistent New Entry button ── */}
+      <div style={{ position: "fixed", bottom: 24, right: 24, zIndex: 998 }}>
+        <button
+          onClick={() => { setPhase("code"); setCodeInput(""); setValidCode(null); setSelectedBooth(null); setForm({ companyName: "", contactName: "", contactEmail: "", contactPhone: "" }); setErr(""); setSuccessMsg(""); }}
+          style={{ background: C.cyan, color: C.white, border: "none", borderRadius: 50, padding: "14px 22px", fontSize: 14, fontWeight: 700, cursor: "pointer", boxShadow: "0 4px 16px rgba(0,0,0,.4)", letterSpacing: .5 }}
+        >
+          + New Entry
+        </button>
+      </div>
+
       {/* Admin tab switcher (when in admin mode) */}
       {adminMode && (
         <div style={{ position: "fixed", bottom: 20, left: "50%", transform: "translateX(-50%)", background: C.navyD, borderRadius: 50, padding: "8px 12px", display: "flex", gap: 6, boxShadow: "0 4px 24px rgba(0,0,0,.5)", zIndex: 999 }}>
