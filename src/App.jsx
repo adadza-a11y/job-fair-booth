@@ -25,11 +25,11 @@ const ISL_T_Y  = HALL_H / 2 - BD - 5;      // island top face top edge (189)
 const ISL_B_Y  = HALL_H / 2 + 5;           // island bottom face top edge (235)
 
 // X anchors
-// Bottom row (1–8): starts at x=144, 8 booths → ends at 576
-// Top row (9–17):   rightmost booth 9 ends at x=700 → x=700-54=646 start of booth 9
-//                   so booth 17 (leftmost) at x=646-8*54=214
-// Center island (18–33): 8 per row, starts at x=144, aligned with bottom row
-const BOT_X0  = 144;   // booth 1 left edge
+// Top row (9–17):    rightmost booth 9 ends at x=700, booth 17 leftmost at x=214
+// Bottom row (1–8):  right-aligned with entrance (east) wall → right edge at x=700
+//                    so BOT_X0 = 700 - 8*54 = 268
+// Center island (18–33): 8 per row, starts at x=144
+const BOT_X0  = 268;   // booth 1 left edge (right-aligned with east wall)
 const TOP_X0  = 214;   // booth 17 left edge (leftmost of top row)
 const ISL_X0  = 144;   // booth 18 / 33 left edge
 
@@ -274,14 +274,15 @@ export default function App() {
     <div style={S.page}>
       {/* Header */}
       <div style={{ textAlign: "center", marginBottom: 28 }}>
-        <div onClick={handleTitleClick} style={{ cursor: "pointer", userSelect: "none" }}>
-          <div style={{ fontSize: 13, fontWeight: 600, color: C.cyan, letterSpacing: 2, marginBottom: 6 }}>
+        <div onClick={handleTitleClick} style={{ cursor: "pointer", userSelect: "none", display: "flex", flexDirection: "column", alignItems: "center", gap: 10 }}>
+          <img src="/cue-logo.png" alt="CUE Logo" style={{ height: 80, objectFit: "contain" }} />
+          <div style={{ fontSize: 13, fontWeight: 600, color: C.cyan, letterSpacing: 2 }}>
             CATHOLIC UNIVERSITY IN ERBIL
           </div>
           <div style={{ fontSize: 28, fontWeight: 800, color: C.white, letterSpacing: 1 }}>
             JOB FAIR 2026
           </div>
-          <div style={{ fontSize: 13, color: "#93c5fd", marginTop: 4 }}>
+          <div style={{ fontSize: 13, color: "#93c5fd" }}>
             Booth Reservation System
           </div>
         </div>
@@ -476,7 +477,7 @@ export default function App() {
 // ── Floor Plan SVG ─────────────────────────────────────────
 function FloorPlan({ reservations, onBoothClick, adminMode, phase }) {
   const PAD = 40;
-  const svgW = HALL_W + PAD * 2;
+  const svgW = HALL_W + PAD * 2 + 80; // extra 80px on right for entrance label
   const svgH = HALL_H + PAD * 2;
 
   return (
@@ -489,8 +490,12 @@ function FloorPlan({ reservations, onBoothClick, adminMode, phase }) {
         <rect x={PAD} y={PAD} width={HALL_W} height={HALL_H} fill="#f8fafc" stroke={C.navy} strokeWidth={2.5} rx={4} />
 
         {/* Wall labels */}
-        <text x={PAD + HALL_W / 2} y={PAD - 10} textAnchor="middle" fontSize={11} fill={C.grayD}>ENTRANCE / NORTH WALL</text>
-        <text x={PAD + HALL_W / 2} y={PAD + HALL_H + 18} textAnchor="middle" fontSize={11} fill={C.grayD}>SOUTH WALL</text>
+        <text x={PAD + HALL_W / 2} y={PAD - 10} textAnchor="middle" fontSize={11} fill={C.grayD}>EAST WALL</text>
+        <text x={PAD + HALL_W / 2} y={PAD + HALL_H + 18} textAnchor="middle" fontSize={11} fill={C.grayD}>WEST WALL</text>
+
+        {/* Entrance marker on right (east) wall */}
+        <rect x={PAD + HALL_W - 2} y={PAD + HALL_H / 2 - 40} width={18} height={80} fill={C.cyan} rx={3} />
+        <text x={PAD + HALL_W + 22} y={PAD + HALL_H / 2} textAnchor="start" fontSize={11} fontWeight={700} fill={C.cyan} dominantBaseline="middle">ENTRANCE</text>
 
         {/* Center island outline */}
         <rect
