@@ -397,9 +397,29 @@ export default function App() {
               <InfoRow label="Email" value={form.contactEmail} />
               <InfoRow label="Phone" value={form.contactPhone} />
             </div>
-            <div style={{ fontSize: 13, color: C.grayD }}>
+            <div style={{ fontSize: 13, color: C.grayD, marginBottom: 20 }}>
               Please save a screenshot of this page for your records. A representative will contact you with further details.
             </div>
+            <button onClick={() => setPhase("viewmap")} style={{ ...S.btnPrimary, marginTop: 0, background: C.navy }}>
+              🗺 View Live Floor Map
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* ── Phase: View Map (read-only after reservation) ── */}
+      {phase === "viewmap" && (
+        <div style={{ width: "100%", maxWidth: 880 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 14 }}>
+            <button onClick={() => setPhase("success")} style={{ ...S.btnGhost, color: C.white, borderColor: "#ffffff44" }}>← Back</button>
+            <div style={{ color: C.white, fontSize: 14 }}>
+              Live floor map — your booth <strong style={{ color: C.cyan }}>#{selectedBooth}</strong> is highlighted in red.
+            </div>
+          </div>
+          <FloorPlan reservations={reservations} onBoothClick={null} adminMode={false} phase="viewmap" highlightBooth={selectedBooth} />
+          <div style={{ marginTop: 12, display: "flex", gap: 16, justifyContent: "center", flexWrap: "wrap" }}>
+            <Legend color={C.green} label="Available" />
+            <Legend color={C.red} label="Reserved" />
           </div>
         </div>
       )}
