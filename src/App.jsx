@@ -229,7 +229,7 @@ export default function App() {
     const batch = writeBatch(db);
     for (let i = 0; i < n; i++) {
       let code;
-      do { code = (genPrefix ? genPrefix.toUpperCase().replace(/[^A-Z0-9]/g,"") : "") + randomCode(genPrefix ? 6 : 8); }
+      do { code = (genPrefix ? genPrefix.toUpperCase().replace(/[^A-Z0-9]/g,"") : "") + randomCode(genPrefix ? 3 : 5); }
       while (allCodes.find((c) => c.id === code));
       codes.push(code);
       batch.set(doc(db, COL_CODES, code), { used: false, companyName: "", boothId: null, createdAt: Date.now() });
