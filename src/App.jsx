@@ -13,49 +13,46 @@ const COL_CODES = "jf_codes";         // {used: bool, companyName: str, boothId:
 const ADMIN_PW = "jobfair2026admin";
 
 // ── Floor Plan Layout ─────────────────────────────────────
-// All booths: 3m wide × 2m deep
-// Scale: 18px/m → BW=54, BD=36
-const BW = 54, BD = 36;
-const HALL_W = 720, HALL_H = 460;
+// Coordinates match cue_cafeteria_floor_plan_v4.svg (viewBox 0 0 680 590)
+// Total: 28 booths
+const TOTAL_BOOTHS = 28;
 
-// Row positions
-const TOP_Y    = 18;                        // top wall row top edge
-const BOT_Y    = HALL_H - BD - 18;          // bottom wall row top edge (406)
-const ISL_T_Y  = HALL_H / 2 - BD - 5;      // island top face top edge (189)
-const ISL_B_Y  = HALL_H / 2 + 5;           // island bottom face top edge (235)
-
-// X anchors
-// Top row (9–17):    rightmost booth 9 ends at x=700, booth 17 leftmost at x=214
-// Bottom row (1–8):  right-aligned with entrance (east) wall → right edge at x=700
-//                    so BOT_X0 = 700 - 8*54 = 268
-// Center island (18–33): 8 per row, starts at x=144
-const BOT_X0  = 268;   // booth 1 left edge (right-aligned with east wall)
-const TOP_X0  = 214;   // booth 17 left edge (leftmost of top row)
-const ISL_X0  = 144;   // booth 18 / 33 left edge
-
-// Build booth positions map
-const BOOTHS = {};
-
-// Bottom wall: booths 1–8, left to right
-for (let i = 0; i < 8; i++) {
-  BOOTHS[String(i + 1)] = { x: BOT_X0 + i * BW, y: BOT_Y, w: BW, h: BD, row: "bottom" };
-}
-
-// Top wall: booths 17(left)…9(right) → render left-to-right as 17,16,…,9
-for (let i = 0; i < 9; i++) {
-  const num = 17 - i;
-  BOOTHS[String(num)] = { x: TOP_X0 + i * BW, y: TOP_Y, w: BW, h: BD, row: "top" };
-}
-
-// Island top face: 18–25 left to right
-for (let i = 0; i < 8; i++) {
-  BOOTHS[String(18 + i)] = { x: ISL_X0 + i * BW, y: ISL_T_Y, w: BW, h: BD, row: "island-top" };
-}
-
-// Island bottom face: 33(left)…26(right) left to right
-for (let i = 0; i < 8; i++) {
-  BOOTHS[String(33 - i)] = { x: ISL_X0 + i * BW, y: ISL_B_Y, w: BW, h: BD, row: "island-bot" };
-}
+const BOOTHS = {
+  // South wall: 1–8 (right to left), booth 1 = sponsor corner
+  "1":  { x: 556, y: 480, w: 62, h: 42, sponsor: true, wall: true },
+  "2":  { x: 486, y: 480, w: 62, h: 42, wall: true },
+  "3":  { x: 416, y: 480, w: 62, h: 42, wall: true },
+  "4":  { x: 346, y: 480, w: 62, h: 42, wall: true },
+  "5":  { x: 276, y: 480, w: 62, h: 42, wall: true },
+  "6":  { x: 206, y: 480, w: 62, h: 42, wall: true },
+  "7":  { x: 136, y: 480, w: 62, h: 42, wall: true },
+  "8":  { x: 74,  y: 480, w: 54, h: 42, wall: true },
+  // East wall: 9–16 (right to left), booth 9 = sponsor corner
+  "9":  { x: 556, y: 54,  w: 62, h: 42, sponsor: true, wall: true },
+  "10": { x: 486, y: 54,  w: 62, h: 42, wall: true },
+  "11": { x: 416, y: 54,  w: 62, h: 42, wall: true },
+  "12": { x: 346, y: 54,  w: 62, h: 42, wall: true },
+  "13": { x: 276, y: 54,  w: 62, h: 42, wall: true },
+  "14": { x: 206, y: 54,  w: 62, h: 42, wall: true },
+  "15": { x: 136, y: 54,  w: 62, h: 42, wall: true },
+  "16": { x: 74,  y: 54,  w: 54, h: 42, wall: true },
+  // North wall: 17–19 (vertical, top to bottom)
+  "17": { x: 68, y: 168, w: 42, h: 62, wall: true },
+  "18": { x: 68, y: 242, w: 42, h: 62, wall: true },
+  "19": { x: 68, y: 316, w: 42, h: 62, wall: true },
+  // Island top face: 20–23
+  "20": { x: 164, y: 214, w: 56, h: 52 },
+  "21": { x: 228, y: 214, w: 56, h: 52 },
+  "22": { x: 292, y: 214, w: 56, h: 52 },
+  "23": { x: 356, y: 214, w: 56, h: 52 },
+  // Island bottom face: 24–27
+  "24": { x: 164, y: 302, w: 56, h: 52 },
+  "25": { x: 228, y: 302, w: 56, h: 52 },
+  "26": { x: 292, y: 302, w: 56, h: 52 },
+  "27": { x: 356, y: 302, w: 56, h: 52 },
+  // Sponsor island booth: 28 (large, faces entrance)
+  "28": { x: 424, y: 214, w: 80, h: 140, sponsor: true },
+};
 
 // ── Helpers ───────────────────────────────────────────────
 function randomCode(len = 8) {
@@ -331,11 +328,11 @@ export default function App() {
               <div style={{ fontSize: 12, color: C.grayD }}>Reserved</div>
             </div>
             <div style={{ textAlign: "center" }}>
-              <div style={{ fontSize: 24, fontWeight: 800, color: C.green }}>{33 - Object.keys(reservations).length}</div>
+              <div style={{ fontSize: 24, fontWeight: 800, color: C.green }}>{TOTAL_BOOTHS - Object.keys(reservations).length}</div>
               <div style={{ fontSize: 12, color: C.grayD }}>Available</div>
             </div>
             <div style={{ textAlign: "center" }}>
-              <div style={{ fontSize: 24, fontWeight: 800, color: C.navy }}>33</div>
+              <div style={{ fontSize: 24, fontWeight: 800, color: C.navy }}>{TOTAL_BOOTHS}</div>
               <div style={{ fontSize: 12, color: C.grayD }}>Total Booths</div>
             </div>
           </div>
@@ -511,89 +508,71 @@ export default function App() {
 }
 
 // ── Floor Plan SVG ─────────────────────────────────────────
-function FloorPlan({ reservations, onBoothClick, adminMode, phase }) {
-  const PAD = 40;
-  const svgW = HALL_W + PAD * 2 + 80; // extra 80px on right for entrance label
-  const svgH = HALL_H + PAD * 2;
+function FloorPlan({ reservations, onBoothClick, adminMode, phase, highlightBooth }) {
+  // Uses exact coordinates from cue_cafeteria_floor_plan_v4.svg (viewBox 0 0 680 590)
 
   return (
     <div style={{ background: C.white, borderRadius: 16, padding: "20px 12px", overflowX: "auto", boxShadow: "0 4px 24px rgba(0,0,0,.25)" }}>
       <div style={{ fontSize: 13, fontWeight: 600, color: C.grayD, textAlign: "center", marginBottom: 12, letterSpacing: 1 }}>
         CUE MAIN CAFETERIA — FLOOR PLAN
       </div>
-      <svg width={svgW} height={svgH} viewBox={`0 0 ${svgW} ${svgH}`} style={{ display: "block", margin: "0 auto", maxWidth: "100%" }}>
-        {/* Hall outline */}
-        <rect x={PAD} y={PAD} width={HALL_W} height={HALL_H} fill="#f8fafc" stroke={C.navy} strokeWidth={2.5} rx={4} />
-
+      <svg width="100%" viewBox="0 0 680 590" style={{ display: "block", margin: "0 auto", maxWidth: 720 }}>
+        {/* Room boundary */}
+        <rect x="68" y="48" width="556" height="488" rx="6" fill="#f8fafc" stroke={C.navy} strokeWidth="1.5" />
         {/* Wall labels */}
-        <text x={PAD + HALL_W / 2} y={PAD - 10} textAnchor="middle" fontSize={11} fill={C.grayD}>EAST WALL</text>
-        <text x={PAD + HALL_W / 2} y={PAD + HALL_H + 18} textAnchor="middle" fontSize={11} fill={C.grayD}>WEST WALL</text>
+        <text x="346" y="32" textAnchor="middle" fontSize="11" fill={C.grayD} fontWeight="500">CUE Main Cafeteria — Floor Plan</text>
+        <text x="346" y="544" textAnchor="middle" fontSize="9" fill={C.grayD}>SOUTH WALL</text>
+        <text x="346" y="62" textAnchor="middle" fontSize="9" fill={C.grayD}>EAST WALL</text>
+        <text x="46" y="295" textAnchor="middle" fontSize="8" fill={C.grayD} transform="rotate(-90,46,295)">NORTH WALL</text>
+        {/* Entrance */}
+        <rect x="624" y="256" width="20" height="56" rx="3" fill={C.cyan} />
+        <text fontSize="8" x="634" y="278" textAnchor="middle" fill={C.white} fontWeight="700">EN</text>
+        <text fontSize="8" x="634" y="290" textAnchor="middle" fill={C.white} fontWeight="700">TR</text>
+        {/* 2m aisle */}
+        <rect x="110" y="192" width="48" height="184" rx="3" fill="#f1f5f9" stroke="#94a3b8" strokeWidth="0.5" strokeDasharray="3 3" />
+        <text fontSize="8" x="134" y="279" textAnchor="middle" fill="#94a3b8" transform="rotate(-90,134,284)">2m aisle</text>
+        {/* Island outline */}
+        <rect x="158" y="192" width="450" height="184" rx="6" fill="none" stroke="#94a3b8" strokeWidth="0.8" strokeDasharray="5 4" />
+        <text fontSize="9" x="310" y="207" textAnchor="middle" fill="#94a3b8">ISLAND — back to back</text>
 
-        {/* Entrance marker on right (east) wall */}
-        <rect x={PAD + HALL_W - 2} y={PAD + HALL_H / 2 - 40} width={18} height={80} fill={C.cyan} rx={3} />
-        <text x={PAD + HALL_W + 22} y={PAD + HALL_H / 2} textAnchor="start" fontSize={11} fontWeight={700} fill={C.cyan} dominantBaseline="middle">ENTRANCE</text>
-
-        {/* Center island outline */}
-        <rect
-          x={PAD + ISL_X0 - 6}
-          y={PAD + ISL_T_Y - 6}
-          width={8 * BW + 12}
-          height={BD * 2 + 10 + 12}
-          fill="#f1f5f9"
-          stroke="#94a3b8"
-          strokeWidth={1.5}
-          strokeDasharray="5,3"
-          rx={6}
-        />
-        <text x={PAD + ISL_X0 + 4 * BW} y={PAD + ISL_T_Y + BD + 5 + 2} textAnchor="middle" fontSize={10} fill="#94a3b8" dominantBaseline="middle">BACK TO BACK</text>
-
-        {/* Render all booths */}
+        {/* All booths */}
         {Object.entries(BOOTHS).map(([id, b]) => {
           const reserved = reservations[id];
-          const isTop = b.row === "top" || b.row === "island-top";
-          const fill = reserved ? "#fee2e2" : "#dcfce7";
-          const stroke = reserved ? C.red : C.green;
-          const textColor = reserved ? C.red : C.green;
+          const isHighlighted = highlightBooth === id;
+          let fill, stroke, textColor, strokeWidth;
+          if (isHighlighted)      { fill="#dbeafe"; stroke=C.cyan;     textColor=C.navy;     strokeWidth="2.5"; }
+          else if (reserved)      { fill="#fee2e2"; stroke=C.red;      textColor=C.red;      strokeWidth="1";   }
+          else if (b.sponsor && b.wall) { fill="#e0f7fa"; stroke=C.cyan; textColor="#0e7490"; strokeWidth="1.5"; }
+          else if (b.wall)        { fill="#cffafe"; stroke=C.cyan;     textColor="#0e7490";  strokeWidth="1.2"; }
+          else if (b.sponsor)     { fill="#FAECE7"; stroke="#993C1D";  textColor="#993C1D";  strokeWidth="1";   }
+          else                    { fill="#EAF3DE"; stroke="#3B6D11";  textColor="#27500A";  strokeWidth="0.7"; }
           const cursor = onBoothClick ? (reserved && !adminMode ? "not-allowed" : "pointer") : "default";
-          const bx = PAD + b.x, by = PAD + b.y;
-
+          const cx = b.x + b.w / 2, cy = b.y + b.h / 2;
           return (
             <g key={id} onClick={() => onBoothClick && onBoothClick(id)} style={{ cursor }}>
-              <rect
-                x={bx} y={by} width={b.w} height={b.h}
-                fill={fill} stroke={stroke} strokeWidth={1.5} rx={3}
-              />
-              {/* Booth number */}
-              <text x={bx + b.w / 2} y={by + b.h / 2} textAnchor="middle" dominantBaseline="middle" fontSize={11} fontWeight={700} fill={textColor}>
-                {id}
-              </text>
-              {/* Company name if reserved */}
-              {reserved && (
-                <text
-                  x={bx + b.w / 2}
-                  y={isTop ? by - 6 : by + b.h + 10}
-                  textAnchor="middle"
-                  fontSize={9}
-                  fill={C.navy}
-                  fontWeight={600}
-                >
-                  {reserved.companyName.length > 10 ? reserved.companyName.slice(0, 10) + "…" : reserved.companyName}
-                </text>
-              )}
+              <rect x={b.x} y={b.y} width={b.w} height={b.h} rx="4" fill={fill} stroke={stroke} strokeWidth={strokeWidth} />
+              <text fontSize="11" fontWeight="600" x={cx} y={cy - (reserved || (!reserved && b.sponsor) ? 6 : 0)} textAnchor="middle" dominantBaseline="middle" fill={textColor}>{id}</text>
+              {reserved && <text fontSize="7" x={cx} y={cy + 8} textAnchor="middle" fill={textColor}>{reserved.companyName.length > 9 ? reserved.companyName.slice(0,9)+"…" : reserved.companyName}</text>}
+              {!reserved && b.sponsor && <text fontSize="7" x={cx} y={cy + 8} textAnchor="middle" fill="#993C1D">Sponsor</text>}
             </g>
           );
         })}
 
-        {/* Row labels */}
-        <text x={PAD + TOP_X0 - 8} y={PAD + TOP_Y + BD / 2} textAnchor="end" dominantBaseline="middle" fontSize={10} fill={C.grayD}>TOP ROW</text>
-        <text x={PAD + BOT_X0 - 8} y={PAD + BOT_Y + BD / 2} textAnchor="end" dominantBaseline="middle" fontSize={10} fill={C.grayD}>BOTTOM ROW</text>
-        <text x={PAD + ISL_X0 - 8} y={PAD + ISL_T_Y + BD / 2} textAnchor="end" dominantBaseline="middle" fontSize={10} fill={C.grayD}>ISLAND</text>
+        {/* Legend */}
+        <rect x="74" y="552" width="11" height="11" rx="2" fill="#cffafe" stroke={C.cyan} strokeWidth="1.2" />
+        <text fontSize="9" x="91" y="562" fill={C.grayD}>Wall booth</text>
+        <rect x="168" y="552" width="11" height="11" rx="2" fill="#EAF3DE" stroke="#3B6D11" strokeWidth="0.5" />
+        <text fontSize="9" x="185" y="562" fill={C.grayD}>Island booth</text>
+        <rect x="262" y="552" width="11" height="11" rx="2" fill="#fee2e2" stroke={C.red} strokeWidth="0.7" />
+        <text fontSize="9" x="279" y="562" fill={C.grayD}>Reserved</text>
+        <rect x="340" y="552" width="11" height="11" rx="2" fill="#FAECE7" stroke="#993C1D" strokeWidth="1" />
+        <text fontSize="9" x="357" y="562" fill={C.grayD}>Sponsor</text>
       </svg>
 
       {/* Stats */}
       <div style={{ display: "flex", justifyContent: "center", gap: 24, marginTop: 12, fontSize: 13, color: C.grayD }}>
         <span><span style={{ color: C.red, fontWeight: 700 }}>{Object.keys(reservations).length}</span> reserved</span>
-        <span><span style={{ color: C.green, fontWeight: 700 }}>{33 - Object.keys(reservations).length}</span> available</span>
+        <span><span style={{ color: C.green, fontWeight: 700 }}>{TOTAL_BOOTHS - Object.keys(reservations).length}</span> available</span>
       </div>
     </div>
   );
