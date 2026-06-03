@@ -513,17 +513,13 @@ function FloorPlan({ reservations, onBoothClick, adminMode, phase, highlightBoot
 
   return (
     <div style={{ background: C.white, borderRadius: 16, padding: "20px 12px", overflowX: "auto", boxShadow: "0 4px 24px rgba(0,0,0,.25)" }}>
-      <div style={{ fontSize: 13, fontWeight: 600, color: C.grayD, textAlign: "center", marginBottom: 12, letterSpacing: 1 }}>
-        CUE MAIN CAFETERIA — FLOOR PLAN
-      </div>
       <svg width="100%" viewBox="0 0 680 590" style={{ display: "block", margin: "0 auto", maxWidth: 720 }}>
         {/* Room boundary */}
         <rect x="68" y="48" width="556" height="488" rx="6" fill="#f8fafc" stroke={C.navy} strokeWidth="1.5" />
-        {/* Wall labels */}
-        <text x="346" y="32" textAnchor="middle" fontSize="11" fill={C.grayD} fontWeight="500">CUE Main Cafeteria — Floor Plan</text>
-        <text x="346" y="544" textAnchor="middle" fontSize="9" fill={C.grayD}>SOUTH WALL</text>
-        <text x="346" y="62" textAnchor="middle" fontSize="9" fill={C.grayD}>EAST WALL</text>
-        <text x="46" y="295" textAnchor="middle" fontSize="8" fill={C.grayD} transform="rotate(-90,46,295)">NORTH WALL</text>
+        {/* Wall labels — placed outside the room boundary */}
+        <text x="346" y="42" textAnchor="middle" fontSize="9" fill={C.grayD} letterSpacing="1">EAST WALL</text>
+        <text x="346" y="548" textAnchor="middle" fontSize="9" fill={C.grayD} letterSpacing="1">SOUTH WALL</text>
+        <text x="40" y="295" textAnchor="middle" fontSize="8" fill={C.grayD} transform="rotate(-90,40,295)" letterSpacing="1">NORTH WALL</text>
         {/* Entrance */}
         <rect x="624" y="256" width="20" height="56" rx="3" fill={C.cyan} />
         <text fontSize="8" x="634" y="278" textAnchor="middle" fill={C.white} fontWeight="700">EN</text>
@@ -548,12 +544,15 @@ function FloorPlan({ reservations, onBoothClick, adminMode, phase, highlightBoot
           else                    { fill="#EAF3DE"; stroke="#3B6D11";  textColor="#27500A";  strokeWidth="0.7"; }
           const cursor = onBoothClick ? (reserved && !adminMode ? "not-allowed" : "pointer") : "default";
           const cx = b.x + b.w / 2, cy = b.y + b.h / 2;
+          const sizeLabel = b.wall ? "3m×2m" : (id === "28" ? "3m×4m" : "2m×2m");
+          const hasSubtext = reserved || (!reserved && b.sponsor);
           return (
             <g key={id} onClick={() => onBoothClick && onBoothClick(id)} style={{ cursor }}>
               <rect x={b.x} y={b.y} width={b.w} height={b.h} rx="4" fill={fill} stroke={stroke} strokeWidth={strokeWidth} />
-              <text fontSize="11" fontWeight="600" x={cx} y={cy - (reserved || (!reserved && b.sponsor) ? 6 : 0)} textAnchor="middle" dominantBaseline="middle" fill={textColor}>{id}</text>
-              {reserved && <text fontSize="7" x={cx} y={cy + 8} textAnchor="middle" fill={textColor}>{reserved.companyName.length > 9 ? reserved.companyName.slice(0,9)+"…" : reserved.companyName}</text>}
-              {!reserved && b.sponsor && <text fontSize="7" x={cx} y={cy + 8} textAnchor="middle" fill="#993C1D">Sponsor</text>}
+              <text fontSize="11" fontWeight="600" x={cx} y={cy - 8} textAnchor="middle" dominantBaseline="middle" fill={textColor}>{id}</text>
+              <text fontSize="7" x={cx} y={cy + 4} textAnchor="middle" fill={textColor} opacity="0.75">{sizeLabel}</text>
+              {reserved && <text fontSize="7" x={cx} y={cy + 14} textAnchor="middle" fill={textColor}>{reserved.companyName.length > 9 ? reserved.companyName.slice(0,9)+"…" : reserved.companyName}</text>}
+              {!reserved && b.sponsor && <text fontSize="7" x={cx} y={cy + 14} textAnchor="middle" fill="#993C1D">Sponsor</text>}
             </g>
           );
         })}
