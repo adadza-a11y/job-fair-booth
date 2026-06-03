@@ -544,7 +544,7 @@ function FloorPlan({ reservations, onBoothClick, adminMode, phase, highlightBoot
           else                    { fill="#EAF3DE"; stroke="#3B6D11";  textColor="#27500A";  strokeWidth="0.7"; }
           const cursor = onBoothClick ? (reserved && !adminMode ? "not-allowed" : "pointer") : "default";
           const cx = b.x + b.w / 2, cy = b.y + b.h / 2;
-          const sizeLabel = b.wall ? "3m×2m" : (id === "28" ? "3m×4m" : "2m×2m");
+          const sizeLabel = "2.2×2m";
           const hasSubtext = reserved || (!reserved && b.sponsor);
           return (
             <g key={id} onClick={() => onBoothClick && onBoothClick(id)} style={{ cursor }}>
@@ -556,6 +556,11 @@ function FloorPlan({ reservations, onBoothClick, adminMode, phase, highlightBoot
             </g>
           );
         })}
+
+        {/* Booth size callout */}
+        <rect x="430" y="548" width="192" height="28" rx="5" fill="#e0f7fa" stroke={C.cyan} strokeWidth="1" />
+        <text fontSize="9" fontWeight="700" x="526" y="559" textAnchor="middle" fill="#0e7490">📐 Usable booth space:</text>
+        <text fontSize="9" fontWeight="700" x="526" y="570" textAnchor="middle" fill="#0e7490">2.2m (W) × 2m (D)</text>
 
         {/* Legend */}
         <rect x="74" y="552" width="11" height="11" rx="2" fill="#cffafe" stroke={C.cyan} strokeWidth="1.2" />
