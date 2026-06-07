@@ -546,9 +546,20 @@ function FloorPlan({ reservations, onBoothClick, adminMode, phase, highlightBoot
           const cx = b.x + b.w / 2, cy = b.y + b.h / 2;
           const sizeLabel = "2.2×2m";
           const hasSubtext = reserved || (!reserved && b.sponsor);
+          // Corner booths 1 & 9 get a diagonal cut on their inner corner
+          const CUT = 18;
+          const cornerShape =
+            id === "9"
+              ? `${b.x},${b.y} ${b.x+b.w},${b.y} ${b.x+b.w},${b.y+b.h} ${b.x+CUT},${b.y+b.h} ${b.x},${b.y+b.h-CUT}`
+              : id === "1"
+              ? `${b.x},${b.y+CUT} ${b.x+CUT},${b.y} ${b.x+b.w},${b.y} ${b.x+b.w},${b.y+b.h} ${b.x},${b.y+b.h}`
+              : null;
           return (
             <g key={id} onClick={() => onBoothClick && onBoothClick(id)} style={{ cursor }}>
-              <rect x={b.x} y={b.y} width={b.w} height={b.h} rx="4" fill={fill} stroke={stroke} strokeWidth={strokeWidth} />
+              {cornerShape
+                ? <polygon points={cornerShape} fill={fill} stroke={stroke} strokeWidth={strokeWidth} />
+                : <rect x={b.x} y={b.y} width={b.w} height={b.h} rx="4" fill={fill} stroke={stroke} strokeWidth={strokeWidth} />
+              }
               <text fontSize="11" fontWeight="600" x={cx} y={cy - 8} textAnchor="middle" dominantBaseline="middle" fill={textColor}>{id}</text>
               <text fontSize="7" x={cx} y={cy + 4} textAnchor="middle" fill={textColor} opacity="0.75">{sizeLabel}</text>
               {reserved && <text fontSize="7" x={cx} y={cy + 14} textAnchor="middle" fill={textColor}>{reserved.companyName.length > 9 ? reserved.companyName.slice(0,9)+"…" : reserved.companyName}</text>}
