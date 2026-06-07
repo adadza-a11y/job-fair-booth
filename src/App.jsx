@@ -546,14 +546,10 @@ function FloorPlan({ reservations, onBoothClick, adminMode, phase, highlightBoot
           const cx = b.x + b.w / 2, cy = b.y + b.h / 2;
           const sizeLabel = "2.2×2m";
           const hasSubtext = reserved || (!reserved && b.sponsor);
-          // Corner booths 1 & 9 get a diagonal cut on their inner corner
-          const CUT = 18;
-          const cornerShape =
-            id === "9"
-              ? `${b.x},${b.y} ${b.x+b.w},${b.y} ${b.x+b.w},${b.y+b.h} ${b.x+CUT},${b.y+b.h} ${b.x},${b.y+b.h-CUT}`
-              : id === "1"
-              ? `${b.x},${b.y+CUT} ${b.x+CUT},${b.y} ${b.x+b.w},${b.y} ${b.x+b.w},${b.y+b.h} ${b.x},${b.y+b.h}`
-              : null;
+          // Corner booths 1 & 9 rendered as diamonds (rotated squares)
+          const cornerShape = (id === "9" || id === "1")
+            ? `${cx},${b.y} ${b.x+b.w},${cy} ${cx},${b.y+b.h} ${b.x},${cy}`
+            : null;
           return (
             <g key={id} onClick={() => onBoothClick && onBoothClick(id)} style={{ cursor }}>
               {cornerShape
