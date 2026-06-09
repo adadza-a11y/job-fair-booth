@@ -370,7 +370,9 @@ export default function App() {
             <button onClick={() => setPhase("map")} style={{ ...S.btnGhost, padding: "6px 12px", fontSize: 13 }}>← Back</button>
             <div>
               <div style={{ fontSize: 18, fontWeight: 700, color: C.navy }}>Reserve Booth #{selectedBooth}</div>
-              <div style={{ fontSize: 12, color: C.grayD }}>3m × 2m — CUE Main Cafeteria</div>
+              <div style={{ fontSize: 12, color: C.grayD }}>
+                {BOOTHS[selectedBooth]?.wall ? "3m × 2m" : selectedBooth === "28" ? "Large Sponsor Booth" : "2m × 2m"} — CUE Main Cafeteria
+              </div>
             </div>
           </div>
           <form onSubmit={handleReserve}>
@@ -544,7 +546,7 @@ function FloorPlan({ reservations, onBoothClick, adminMode, phase, highlightBoot
           else                    { fill="#EAF3DE"; stroke="#3B6D11";  textColor="#27500A";  strokeWidth="0.7"; }
           const cursor = onBoothClick ? (reserved && !adminMode ? "not-allowed" : "pointer") : "default";
           const cx = b.x + b.w / 2, cy = b.y + b.h / 2;
-          const sizeLabel = "2.2×2m";
+          const sizeLabel = id === "28" ? null : b.wall ? "3×2m" : "2×2m";
           const hasSubtext = reserved || (!reserved && b.sponsor);
           // Corner booths 1 & 9 rendered as diamonds (rotated squares)
           const cornerShape = (id === "9" || id === "1")
@@ -557,7 +559,7 @@ function FloorPlan({ reservations, onBoothClick, adminMode, phase, highlightBoot
                 : <rect x={b.x} y={b.y} width={b.w} height={b.h} rx="4" fill={fill} stroke={stroke} strokeWidth={strokeWidth} />
               }
               <text fontSize="11" fontWeight="600" x={cx} y={cy - 8} textAnchor="middle" dominantBaseline="middle" fill={textColor}>{id}</text>
-              <text fontSize="7" x={cx} y={cy + 4} textAnchor="middle" fill={textColor} opacity="0.75">{sizeLabel}</text>
+              {sizeLabel && <text fontSize="7" x={cx} y={cy + 4} textAnchor="middle" fill={textColor} opacity="0.75">{sizeLabel}</text>}
               {reserved && <text fontSize="7" x={cx} y={cy + 14} textAnchor="middle" fill={textColor}>{reserved.companyName.length > 9 ? reserved.companyName.slice(0,9)+"…" : reserved.companyName}</text>}
               {!reserved && b.sponsor && <text fontSize="7" x={cx} y={cy + 14} textAnchor="middle" fill="#993C1D">Sponsor</text>}
             </g>
@@ -566,8 +568,8 @@ function FloorPlan({ reservations, onBoothClick, adminMode, phase, highlightBoot
 
         {/* Booth size callout */}
         <rect x="430" y="548" width="192" height="28" rx="5" fill="#e0f7fa" stroke={C.cyan} strokeWidth="1" />
-        <text fontSize="9" fontWeight="700" x="526" y="559" textAnchor="middle" fill="#0e7490">📐 Usable booth space:</text>
-        <text fontSize="9" fontWeight="700" x="526" y="570" textAnchor="middle" fill="#0e7490">2.2m (W) × 2m (D)</text>
+        <text fontSize="9" fontWeight="700" x="526" y="559" textAnchor="middle" fill="#0e7490">📐 Wall: 3×2m · Island: 2×2m</text>
+        <text fontSize="8" x="526" y="570" textAnchor="middle" fill="#0e7490">(width × depth)</text>
 
         {/* Legend */}
         <rect x="74" y="552" width="11" height="11" rx="2" fill="#cffafe" stroke={C.cyan} strokeWidth="1.2" />
